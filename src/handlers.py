@@ -22,15 +22,19 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not game_active:
         await update.message.reply_text("The game is not active. Type /start to begin!")
         return
-
+    
     try:
         user = update.message.from_user
         file_id = update.message.voice.file_id
         loudness = await processVoice(context.bot, file_id)
         loudness_score = convert_dbfs_to_score(loudness)
-        update_score(user.id, user.username, loudness_score)
+        new_best = update_score(user.id, user.username, loudness_score)
         rankings = get_current_rankings()
-        await update.message.reply_text(f"Loudness: {loudness_score} pts\nCurrent Rankings:\n{rankings}")
+        if new_best:
+            await update.message.reply_text(f"Congrats, {user.first_name}! You just beat your previous record with {loudness_score} pts!\n\nCurrent Rankings:\n{rankings}")
+        else:
+            await update.message.reply_text(f"Your new attempt: {loudness_score} pts, {user.first_name}!\nYou didn’t beat your previous best — keep trying!\n\nCurrent Rankings:\n{rankings}")
+        
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")

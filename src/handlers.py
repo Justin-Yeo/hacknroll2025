@@ -4,7 +4,6 @@ from audio_utils import processVoice, convert_dbfs_to_score
 from game_logic import update_score, get_current_rankings, clear_scores
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
     intro_message = (
         "Welcome to the Voice Loudness Game Bot! 🎉\n\n"
         "Send a voice message to participate in the game. "
@@ -15,20 +14,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        chat_id = update.effective_chat.id
-        user_id = update.message.from_user.id
-        username = update.message.from_user.username or update.message.from_user.first_name
-
-        # Analyse voice
+        user = update.message.from_user
         file_id = update.message.voice.file_id
         loudness = await processVoice(context.bot, file_id)
         loudness_score = convert_dbfs_to_score(loudness)
-
-        # Update scores
-        update_score(chat_id, user_id, username, loudness_score)
+        update_score(user.id, user.username, loudness_score)
         rankings = get_current_rankings()
         await update.message.reply_text(f"Loudness: {loudness_score} pts\nCurrent Rankings:\n{rankings}")
-
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")
@@ -43,17 +35,15 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "you against other participants."
     )
     await update.message.reply_text(help_message)
-
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        chat_id = update.effective_chat.id
         rankings = get_current_rankings()
         if rankings:
             final_message = f"Game Over! Here are the final rankings:\n{rankings}"
         else:
             final_message = "No participants recorded any voice messages."
         await update.message.reply_text(final_message)
-        clear_scores(chat_id)
+        clear_scores()
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")

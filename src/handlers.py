@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from audio_utils import processVoice, convert_dbfs_to_score
-from game_logic import update_score, get_current_rankings, get_all_scores
+from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores
 import json
 
 # Game state tracking

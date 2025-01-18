@@ -1,18 +1,28 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from audio_utils import processVoice, convert_dbfs_to_score
-from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores
+from game_logic import update_score, get_current_rankings, get_all_scores
+import json
+
+# Game state tracking
+game_active = False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global game_active
+    game_active = True
     intro_message = (
         "Welcome to the Voice Loudness Game Bot! 🎉\n\n"
         "Send a voice message to participate in the game. "
-        "The bot will measure the loudness of your voice and rank you against other participants. "
-        "Type /end to finish the game and see the final rankings. Have fun!"
+        "Type /end to finish the game. Have fun!"
     )
     await update.message.reply_text(intro_message)
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global game_active
+    if not game_active:
+        await update.message.reply_text("The game is not active. Type /start to begin!")
+        return
+
     try:
         user = update.message.from_user
         file_id = update.message.voice.file_id
@@ -51,8 +61,14 @@ async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"An error occurred while clearing the scores: {e}")
         print(f"Error: {e}")
 
-
+        
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global game_active
+    if not game_active:
+        await update.message.reply_text("The game is already inactive. Type /start to begin!")
+        return
+
+    game_active = False
     try:
         rankings = get_current_rankings()
         if rankings:
@@ -60,7 +76,11 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             final_message = "No participants recorded any voice messages."
         await update.message.reply_text(final_message)
-        # clear_scores()
+        end_message = (
+            "The game has ended! Voice message detection is now disabled. "
+            "Type /start to begin a new game."
+        )
+        await update.message.reply_text(end_message)
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")

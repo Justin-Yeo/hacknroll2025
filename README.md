@@ -25,4 +25,16 @@
 
 ---
 
+## 🔑 Disabling Privacy Mode for Group Chats
+To ensure LoudestWins works seamlessly in your group, the bot needs to process voice messages sent by users. 
+This requires disabling Privacy Mode, which is enabled by default for Telegram bots.
+
+> Disabling Privacy Mode means the bot can see all messages in the group. Make sure this aligns with your group’s privacy preferences.
+
+Here’s how you can disable Privacy Mode:
+1. Open a chat with BotFather (Telegram’s bot management tool).
+2. Send the command /setprivacy.
+3. Select your bot from the list.
+4. Choose `Disable` to turn off Privacy Mode.
+
 **Enjoy playing LoudestWins with your friends!**

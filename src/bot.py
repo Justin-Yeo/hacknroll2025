@@ -1,14 +1,11 @@
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import os
 from dotenv import load_dotenv
+from handlers import start, handle_voice, end, help
 
 # Load environment variables
 load_dotenv()
 TOKEN = os.getenv("TELEGRAM_API_KEY")
-
-# Define the function to handle the /start command using async
-async def start(update, context):
-    await update.message.reply_text('Bot is running')  # Use await here
 
 def main():
     # Initialize the bot application with the token from the .env file
@@ -16,6 +13,15 @@ def main():
 
     # Register the command handler for the /start command
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    application.add_handler(CommandHandler('help', help))
+    application.add_handler(CommandHandler('end', end))
+
+    application.bot.set_my_commands([
+        ('start', 'Start the game and get an introduction'),
+        ('end', 'End the game and see the final rankings'),
+        ('help', 'Show help message')
+    ])
 
     # Start the bot (polling for updates)
     print("Bot is now running. Press Ctrl+C to stop.")

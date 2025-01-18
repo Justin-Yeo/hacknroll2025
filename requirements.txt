@@ -1,2 +1,4 @@
 python-dotenv==1.0.1
 python-telegram-bot==21.1.1
+pydub==0.25.1
+# brew install ffmpeg as a dependency for pydub

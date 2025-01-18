@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from audio_utils import processVoice
+from audio_utils import processVoice, convert_dbfs_to_score
 from game_logic import update_score, get_current_rankings, clear_scores
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -17,9 +17,10 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.message.from_user
         file_id = update.message.voice.file_id
         loudness = await processVoice(context.bot, file_id)
-        update_score(user.id, user.username, loudness)
+        loudness_score = convert_dbfs_to_score(loudness)
+        update_score(user.id, user.username, loudness_score)
         rankings = get_current_rankings()
-        await update.message.reply_text(f"Loudness: {loudness} dB\nCurrent Rankings:\n{rankings}")
+        await update.message.reply_text(f"Loudness: {loudness_score} pts\nCurrent Rankings:\n{rankings}")
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")

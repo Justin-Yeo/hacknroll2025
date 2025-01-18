@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from audio_utils import processVoice, convert_dbfs_to_score
-from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores
+from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores, is_first_time
 import json
 
 # Game state tracking
@@ -25,12 +25,17 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         user = update.message.from_user
+        print(user)
         file_id = update.message.voice.file_id
         loudness = await processVoice(context.bot, file_id)
         loudness_score = convert_dbfs_to_score(loudness)
+        player_first_time = is_first_time(user.id)
         new_best = update_score(user.id, user.username, loudness_score)
         rankings = get_current_rankings()
-        if new_best:
+        
+        if player_first_time: 
+            await update.message.reply_text(f"Well done, {user.first_name}! Amazing first attempt with {loudness_score} pts!\n\nCurrent Rankings:\n{rankings}")
+        elif new_best:
             await update.message.reply_text(f"Congrats, {user.first_name}! You just beat your previous record with {loudness_score} pts!\n\nCurrent Rankings:\n{rankings}")
         else:
             await update.message.reply_text(f"Your new attempt: {loudness_score} pts, {user.first_name}!\nYou didn’t beat your previous best — keep trying!\n\nCurrent Rankings:\n{rankings}")

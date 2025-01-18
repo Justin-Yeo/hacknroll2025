@@ -88,3 +88,9 @@ Keep it loud! 🎤
 def clear_scores():
     """Clear all scores."""
     save_scores({})  # Reset to an empty dictionary
+
+def is_first_time(user_id) -> bool:
+    """Check if this user is playing for the first time based on our scores."""
+    scores = load_scores()  
+    user_id_str = str(user_id)
+    return user_id_str not in scores

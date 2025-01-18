@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from audio_utils import processVoice, convert_dbfs_to_score
-from game_logic import update_score, get_current_rankings, clear_scores
+from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     intro_message = (
@@ -25,10 +25,16 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")
 
+async def show_all_scores(update, context):
+    """Command to show scores for all users."""
+    scores_message = get_all_scores()
+    await update.message.reply_text(f"📊 All Scores:\n{scores_message}")
+
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_message = (
         "Voice Loudness Game Bot Help:\n\n"
         "/start - Start the game and get an introduction.\n"
+        "/show - See the current rankings.\n"
         "/end - End the game and see the final rankings.\n"
         "/help - Show this help message.\n\n"
         "Send a voice message to participate in the game. The bot will measure the loudness of your voice and rank "
@@ -43,7 +49,7 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             final_message = "No participants recorded any voice messages."
         await update.message.reply_text(final_message)
-        clear_scores()
+        # clear_scores()
     except Exception as e:
         await update.message.reply_text(f"An error occurred: {e}")
         print(f"Error: {e}")

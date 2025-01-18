@@ -41,6 +41,17 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "you against other participants."
     )
     await update.message.reply_text(help_message)
+
+async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Command to clear all scores from the JSON file."""
+    try:
+        clear_scores()  # Call the function to clear the scores
+        await update.message.reply_text("All scores have been cleared!")
+    except Exception as e:
+        await update.message.reply_text(f"An error occurred while clearing the scores: {e}")
+        print(f"Error: {e}")
+
+
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         rankings = get_current_rankings()

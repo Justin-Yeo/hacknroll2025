@@ -23,10 +23,27 @@ def save_scores(scores):
         json.dump(scores, f, indent=4)
 
 def update_score(user_id, username, loudness):
-    """Update the user's score in the scores dictionary."""
+    """Update the user's score only if it's their highest attempt."""
+    new_best = False
     scores = load_scores()
-    scores[user_id] = {"username": username, "loudness": loudness}
+
+    user_id_str = str(user_id)
+
+    if user_id_str in scores:
+        current_best = scores[user_id_str]["loudness"]
+        if loudness > current_best:
+            scores[user_id_str]["loudness"] = loudness
+            new_best = True
+    else:
+        scores[user_id_str] = {"username": username, "loudness": loudness}
+        new_best = True
+
+    # Always update username in case it changed
+    scores[user_id_str]["username"] = username
     save_scores(scores)
+
+    return new_best
+
 
 def get_all_scores():
     """Retrieve and format all scores for display."""
@@ -71,3 +88,9 @@ Keep it loud! 🎤
 def clear_scores():
     """Clear all scores."""
     save_scores({})  # Reset to an empty dictionary
+
+def is_first_time(user_id) -> bool:
+    """Check if this user is playing for the first time based on our scores."""
+    scores = load_scores()  
+    user_id_str = str(user_id)
+    return user_id_str not in scores

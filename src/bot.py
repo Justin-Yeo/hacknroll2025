@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import os
 from dotenv import load_dotenv
-from handlers import start, handle_voice, end, help
+from handlers import start, handle_voice, end, help, show_all_scores
 
 # Load environment variables
 load_dotenv()
@@ -13,12 +13,14 @@ def main():
 
     # Register the command handler for the /start command
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('show', show_all_scores))
     application.add_handler(MessageHandler(filters.VOICE, handle_voice))
     application.add_handler(CommandHandler('help', help))
     application.add_handler(CommandHandler('end', end))
 
     application.bot.set_my_commands([
         ('start', 'Start the game and get an introduction'),
+        ('show', 'show the current scores'),
         ('end', 'End the game and see the final rankings'),
         ('help', 'Show help message')
     ])

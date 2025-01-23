@@ -35,6 +35,7 @@ async def set_commands():
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
     update = await request.json()
+    logging.info(f"Received update: {update}")
     print("received update")
     await application.update_queue.put(update)
     return {"status": "ok"}

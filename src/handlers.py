@@ -9,6 +9,7 @@ active_games = {}  # Dictionary to track active games per group chat
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Start the game for a specific group chat."""
+    logging.info("Start command triggered")
     global active_games
     group_id = update.message.chat_id
 

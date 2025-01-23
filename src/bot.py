@@ -2,7 +2,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from fastapi import FastAPI, Request
 import os
 from dotenv import load_dotenv
-from handlers import start, handle_voice, end, help, show_all_scores, clear
+from src.handlers import start, handle_voice, end, help, show_all_scores, clear
 
 # Load environment variables
 load_dotenv()
@@ -35,6 +35,7 @@ async def set_commands():
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
     update = await request.json()
+    print("received update")
     await application.update_queue.put(update)
     return {"status": "ok"}
 

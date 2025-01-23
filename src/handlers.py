@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from src.game_logic import update_score, get_current_rankings, get_all_scores, clear_scores, is_first_time
-from src.audio_utils import processVoice, convert_dbfs_to_score
+from audio_utils import processVoice, convert_dbfs_to_score
+from game_logic import update_score, get_current_rankings, get_all_scores, clear_scores, is_first_time
 
 # Game state tracking per group
 active_games = {}  # Dictionary to track active games per group chat
